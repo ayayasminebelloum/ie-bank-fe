@@ -59,4 +59,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.FRONTEND_WEBAPP_DEV }}  # Ensure this matches your app service name
-          package: ./dist-dev  # Ensure the path is correct
+          package: dist-dev  # Ensure the path is correct
