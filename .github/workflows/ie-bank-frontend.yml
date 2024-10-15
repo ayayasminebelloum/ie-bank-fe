@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  FRONTEND_WEBAPP_DEV: jseijas-fe-dev
+  FRONTEND_WEBAPP_DEV: aya-fe-uat  # Replace with your actual Azure Web App name
 
 jobs:
   build:
@@ -28,7 +28,7 @@ jobs:
       - name: npm install, build, and test
         run: |
           npm install
-          npm run build -- --mode development --dest dist-dev ## this command will build the vue.js app using .env.development variables into the dest-div/ folder
+          npm run build -- --mode development --dest dist-dev ## this command will build the vue.js app using .env.development variables into the dest-dev/ folder
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -41,7 +41,7 @@ jobs:
     needs: build
     environment:
       name: 'Development'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}  # Ensure webapp-url is set in the deploy step
 
     steps:
       - name: Download artifact from build job
@@ -49,13 +49,14 @@ jobs:
         with:
           name: node-app-dev
 
-      - uses: azure/login@v2
+      - name: Login to Azure
+        uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.FRONTEND_WEBAPP_DEV }}
-          package: .
+          app-name: ${{ env.FRONTEND_WEBAPP_DEV }}  # Ensure this matches your app service name
+          package: ./dist-dev  # Ensure the path is correct
